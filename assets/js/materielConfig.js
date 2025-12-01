@@ -1,0 +1,1 @@
+const materielConfig={pc:{sn:true,ritm:true,ticket:true},clavier:{sn:false,ritm:true,ticket:true},souris:{sn:false,ritm:true,ticket:true},chargeur:{sn:false,ritm:true,ticket:true},casque:{sn:false,ritm:true,ticket:true},ecouteurs:{sn:false,ritm:true,ticket:true},imprimante:{sn:true,ritm:true,ticket:true},iphone:{sn:true,ritm:true,ticket:true}};

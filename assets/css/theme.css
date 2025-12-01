@@ -1,0 +1,30 @@
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto}
+.theme-dark{--bg:#000000;--bg2:#0A0F0A;--surface:#0D1710;--green:#0C5329;--green2:#0FD976;--text:#E6FFE6;--text2:#CFEFD0;--line:rgba(12,83,41,.35)}
+.theme-light{--bg:#f6fbf7;--bg2:#ffffff;--surface:#f7faf9;--green:#0C5329;--green2:#0FD976;--text:#0a0f0a;--text2:#244033;--line:rgba(12,83,41,.2)}
+*{box-sizing:border-box}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 10px 30px rgba(12,83,41,.12)}
+.label{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--text2);margin-bottom:.35rem}
+.label .tip{font-size:.9rem;color:var(--green2)}
+.input{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:.65rem .8rem;outline:none;transition:all .25s}
+.input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(12,83,41,.18)}
+.msg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.msg-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.msg-title{font-weight:600;color:#9ee8b9}
+.msg-icon{margin-right:.6rem;color:var(--green2)}
+.message-box{width:100%;min-height:150px;background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px;resize:none;transition:border .25s}
+.message-box:focus{border-color:var(--green)}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;background:var(--green);color:#fff;border:none;border-radius:12px;padding:.75rem 1rem;font-weight:600;transition:transform .25s,box-shadow .25s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 16px rgba(15,217,118,.25)}
+.btn-secondary{background:#0b140e;color:#e6ffe6;border:1px solid var(--line);border-radius:12px;padding:.55rem .9rem}
+.btn-copy{background:#0c1e15;color:#bfffd2;border:1px solid var(--line);border-radius:12px;padding:.4rem .75rem;font-weight:600}
+.btn-copy:hover{box-shadow:0 0 12px rgba(15,217,118,.2)}
+.copy-check{margin-left:.6rem;font-size:.9rem;color:var(--green2);opacity:0;transition:opacity .25s}
+.copy-check.show{opacity:1}
+.copy-check.error{color:#ff6b6b}
+.hidden{display:none}
+.fade{opacity:0;transform:translateY(-4px);transition:opacity .25s ease,transform .25s ease}
+.fade.show{opacity:1;transform:none}
+.msg-user{border-left:3px solid rgba(12,83,41,.6)}
+.msg-tech{border-left:3px solid rgba(240,200,0,.55)}
+.msg-wfm{border-left:3px solid rgba(12,83,41,.6)}
+.msg-excel{border-left:3px solid rgba(12,83,41,.6)}

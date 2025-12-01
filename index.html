@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur Automatique de Messages IT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body class="min-h-screen font-inter theme-dark">
+    <div class="max-w-5xl mx-auto p-6 md:p-10">
+        <header class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-blue-300">Générateur Automatique de Messages IT</h1>
+                <p class="mt-2 text-gray-300">Interface moderne, sombre et responsive pour générer des messages standardisés.</p>
+            </div>
+            <button id="themeToggle" class="btn-secondary" aria-label="Basculer thème">Mode: Sombre</button>
+        </header>
+
+        <section class="card mb-8">
+            <h2 class="text-xl font-semibold text-blue-200 mb-4">Informations</h2>
+            <form id="messageForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="userName" class="label"><span class="tip">ℹ️</span>Nom & Prénom</label>
+                    <input id="userName" type="text" class="input" required>
+                </div>
+                <div>
+                    <label for="materiel" class="label"><span class="tip">ℹ️</span>Matériel (détermine les champs requis)</label>
+                    <select id="materiel" class="input" required>
+                        <option value="pc">PC</option>
+                        <option value="clavier">Clavier</option>
+                        <option value="souris">Souris</option>
+                        <option value="chargeur">Chargeur</option>
+                        <option value="casque">Casque</option>
+                        <option value="ecouteurs">Écouteurs</option>
+                        <option value="imprimante">Imprimante</option>
+                        <option value="iphone">iPhone</option>
+                    </select>
+                </div>
+                <div id="field-sn-old" class="hidden fade">
+                    <label for="snOld" class="label"><span class="tip">ℹ️</span>Numéro de Série (ancien)</label>
+                    <input id="snOld" type="text" class="input">
+                </div>
+                <div id="field-sn-new" class="hidden fade">
+                    <label for="snNew" class="label"><span class="tip">ℹ️</span>Numéro de Série (nouveau)</label>
+                    <input id="snNew" type="text" class="input">
+                </div>
+                <div>
+                    <label for="ritm" class="label"><span class="tip">ℹ️</span>RITM (obligatoire)</label>
+                    <input id="ritm" type="text" class="input" required>
+                </div>
+                <div>
+                    <label for="ticket" class="label"><span class="tip">ℹ️</span>Ticket (obligatoire)</label>
+                    <input id="ticket" type="text" class="input" required>
+                </div>
+                <div>
+                    <label for="deliveryDate" class="label"><span class="tip">ℹ️</span>Date d’envoi</label>
+                    <input id="deliveryDate" type="date" class="input" required>
+                </div>
+                <div>
+                    <label for="pickupDate" class="label"><span class="tip">ℹ️</span>Date de retour / retrait</label>
+                    <input id="pickupDate" type="date" class="input" required>
+                </div>
+            </form>
+        </section>
+
+        <section class="card mb-8">
+            <h2 class="text-xl font-semibold text-blue-200 mb-4">Messages générés</h2>
+            <div class="space-y-6">
+                <div class="msg msg-user" role="region" aria-labelledby="title-msg1">
+                    <div class="msg-header">
+                        <h3 id="title-msg1" class="msg-title"><span class="msg-icon">👤</span>Message utilisateur</h3>
+                        <button data-copy="msg1" id="copy-label-msg1" class="btn-copy" aria-label="Copier Message Utilisateur">Copier message utilisateur<span class="copy-check" id="status-msg1" role="status"></span></button>
+                    </div>
+                    <p class="text-sm text-green-200 mb-2">Notification claire pour l’utilisateur final.</p>
+                    <textarea id="msg1" class="message-box" aria-label="Corps du message utilisateur"></textarea>
+                </div>
+                <div class="msg msg-tech" role="region" aria-labelledby="title-msg2">
+                    <div class="msg-header">
+                        <h3 id="title-msg2" class="msg-title"><span class="msg-icon">🛠️</span>Message tech</h3>
+                        <button data-copy="msg2" id="copy-label-msg2" class="btn-copy" aria-label="Copier Message Tech">Copier message tech<span class="copy-check" id="status-msg2" role="status"></span></button>
+                    </div>
+                    <p class="text-sm text-green-200 mb-2">Détails techniques pour le suivi interne.</p>
+                    <textarea id="msg2" class="message-box" aria-label="Corps du message tech"></textarea>
+                </div>
+                <div class="msg msg-wfm" role="region" aria-labelledby="title-msg3">
+                    <div class="msg-header">
+                        <h3 id="title-msg3" class="msg-title"><span class="msg-icon">📊</span>Message WFM</h3>
+                        <button data-copy="msg3" id="copy-label-msg3" class="btn-copy" aria-label="Copier Message WFM">Copier message WFM<span class="copy-check" id="status-msg3" role="status"></span></button>
+                    </div>
+                    <p class="text-sm text-green-200 mb-2">Validation d’intervention pour les flux internes.</p>
+                    <textarea id="msg3" class="message-box" aria-label="Corps du message WFM"></textarea>
+                </div>
+                <div class="msg msg-excel" role="region" aria-labelledby="title-msg4">
+                    <div class="msg-header">
+                        <h3 id="title-msg4" class="msg-title"><span class="msg-icon">📦</span>Dépôt Locker</h3>
+                        <button data-copy="msg4" id="copy-label-msg4" class="btn-copy" aria-label="Copier Excel ligne">Copier message dépôt<span class="copy-check" id="status-msg4" role="status"></span></button>
+                    </div>
+                    <p class="text-sm text-green-200 mb-2">Bloc prêt à coller dans Excel / tableur.</p>
+                    <textarea id="msg4" class="message-box" aria-label="Corps du message Excel"></textarea>
+                </div>
+                <div class="pt-4 border-t border-gray-800">
+                    <button id="copyAll" class="btn-primary w-full">Copier tous les messages</button>
+                    <p id="copyAllStatus" class="mt-2 text-center text-sm text-gray-300" aria-live="polite"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-blue-200">Historique</h2>
+                <button id="clearHistory" class="btn-secondary">Vider</button>
+            </div>
+            <div id="history" class="space-y-2"></div>
+        </section>
+    </div>
+
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0B6EC7' } } } };
+    </script>
+    <script src="assets/js/materielConfig.js"></script>
+    <script src="assets/js/generator.js"></script>
+    <script src="assets/js/formLogic.js"></script>
+</body>
+</html>

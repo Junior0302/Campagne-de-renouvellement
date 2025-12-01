@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Messages IT</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Style des zones de texte des messages pour qu'elles ressemblent à des cartes éditables */
+        .message-box {
+            min-height: 150px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.2s;
+            resize: none; /* Désactiver le redimensionnement par l'utilisateur */
+        }
+        .message-box:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .required-label:after {
+            content: " *";
+            color: #ef4444; /* Rouge 500 */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-2xl">
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-3xl font-extrabold text-gray-800">
+                Générateur de Messages de Clôture IT
+            </h1>
+            <p class="text-gray-500 mt-1">
+                Saisissez les informations du remplacement d'équipement pour générer automatiquement les messages de suivi.
+            </p>
+        </header>
+
+        <!-- Conteneur pour les notifications/erreurs -->
+        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded font-medium" role="alert">
+            <p>Veuillez remplir tous les champs obligatoires (Nom & prénom utilisateur, Ancien NS, Nouveau NS, Numéro de ticket).</p>
+        </div>
+
+        <!-- FORMULAIRE DE SAISIE -->
+        <section id="input-form" class="mb-10 p-6 bg-indigo-50 rounded-lg border border-indigo-200">
+            <h2 class="text-xl font-semibold mb-4 text-indigo-800">
+                1. Informations du Remplacement
+            </h2>
+            <form id="messageForm" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                
+                <!-- Nom & Prénom Utilisateur -->
+                <div>
+                    <label for="userName" class="block text-sm font-medium text-gray-700 required-label">Nom & Prénom Utilisateur</label>
+                    <input type="text" id="userName" name="userName" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                
+                <!-- Numéro de Ticket (SCTASK) -->
+                <div>
+                    <label for="sctask" class="block text-sm font-medium text-gray-700 required-label">Numéro de Ticket (SCTASK)</label>
+                    <input type="text" id="sctask" name="sctask" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <!-- Ancien Numéro de Série -->
+                <div>
+                    <label for="oldSerial" class="block text-sm font-medium text-gray-700 required-label">Ancien Numéro de Série (NS)</label>
+                    <input type="text" id="oldSerial" name="oldSerial" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <!-- Nouveau Numéro de Série -->
+                <div>
+                    <label for="newSerial" class="block text-sm font-medium text-gray-700 required-label">Nouveau Numéro de Série (NS)</label>
+                    <input type="text" id="newSerial" name="newSerial" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                
+                <!-- RITM (Facultatif) -->
+                <div>
+                    <label for="ritm" class="block text-sm font-medium text-gray-700">RITM (Facultatif)</label>
+                    <input type="text" id="ritm" name="ritm"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                
+                <!-- Date de Remise (Auto + Modifiable) -->
+                <div>
+                    <label for="deliveryDate" class="block text-sm font-medium text-gray-700 required-label">Date de Remise</label>
+                    <input type="date" id="deliveryDate" name="deliveryDate" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+            </form>
+
+            <button onclick="generateMessages()" type="button" 
+                    class="mt-6 w-full py-3 px-4 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-150 transform hover:scale-[1.005] focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                Générer les Messages
+            </button>
+        </section>
+
+        <!-- MESSAGES GÉNÉRÉS -->
+        <section id="output-messages" class="hidden">
+            <h2 class="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">
+                2. Messages Générés et Éditables
+            </h2>
+            
+            <!-- Conteneur des messages -->
+            <div class="space-y-6">
+
+                <!-- 1. Message Fermeture Ticket (Jaune) -->
+                <div class="bg-yellow-100 p-4 rounded-xl border-l-4 border-yellow-500 shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-yellow-800">
+                            1. Ticket (Clôture Côté Tech)
+                        </h3>
+                        <button onclick="copyMessage('techMessage')" class="copy-button bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-1 px-3 rounded-full text-sm transition transform hover:scale-105">
+                            <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V5"></path></svg>
+                            Copier
+                        </button>
+                    </div>
+                    <textarea id="techMessage" class="message-box w-full bg-white border border-yellow-300 text-gray-800 focus:ring-yellow-500 focus:border-yellow-500"></textarea>
+                </div>
+
+                <!-- 2. Message Destiné à l'Utilisateur (Bleu) -->
+                <div class="bg-blue-100 p-4 rounded-xl border-l-4 border-blue-500 shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-blue-800">
+                            2. Message Utilisateur
+                        </h3>
+                        <button onclick="copyMessage('userMessage')" class="copy-button bg-blue-500 hover:bg-blue-600 text-white font-medium py-1 px-3 rounded-full text-sm transition transform hover:scale-105">
+                            <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V5"></path></svg>
+                            Copier
+                        </button>
+                    </div>
+                    <textarea id="userMessage" class="message-box w-full bg-white border border-blue-300 text-gray-800 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+
+                <!-- 3. Message Mise à Jour Asset (Vert) -->
+                <div class="bg-green-100 p-4 rounded-xl border-l-4 border-green-500 shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-green-800">
+                            3. Mise à Jour Asset (Ancien iPhone)
+                        </h3>
+                        <button onclick="copyMessage('assetMessage')" class="copy-button bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-3 rounded-full text-sm transition transform hover:scale-105">
+                            <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V5"></path></svg>
+                            Copier
+                        </button>
+                    </div>
+                    <textarea id="assetMessage" class="message-box w-full bg-white border border-green-300 text-gray-800 focus:ring-green-500 focus:border-green-500"></textarea>
+                </div>
+
+                <!-- 4. Message pour Fichier Excel (Gris) -->
+                <div class="bg-gray-100 p-4 rounded-xl border-l-4 border-gray-500 shadow-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-gray-800">
+                            4. Fichier Excel de Suivi (Othman)
+                        </h3>
+                        <button onclick="copyMessage('excelMessage')" class="copy-button bg-gray-500 hover:bg-gray-600 text-white font-medium py-1 px-3 rounded-full text-sm transition transform hover:scale-105">
+                            <svg class="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V5"></path></svg>
+                            Copier
+                        </button>
+                    </div>
+                    <textarea id="excelMessage" class="message-box w-full bg-white border border-gray-300 text-gray-800 focus:ring-gray-500 focus:border-gray-500"></textarea>
+                </div>
+                
+                <!-- Bouton Copier Tout -->
+                <div class="mt-8 pt-4 border-t">
+                    <button onclick="copyAllMessages()" 
+                            class="w-full py-3 px-4 bg-zinc-600 text-white font-bold rounded-lg shadow-lg hover:bg-zinc-700 transition duration-150 transform hover:scale-[1.005] focus:outline-none focus:ring-4 focus:ring-zinc-500 focus:ring-opacity-50">
+                        Copier TOUS les Messages (pour sauvegarde locale)
+                    </button>
+                    <p id="copyAllStatus" class="mt-2 text-center text-sm font-medium text-gray-600"></p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Zone de Notification/Modal -->
+        <div id="notification-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-indigo-700">Message Copié !</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                <p id="notification-text" class="mt-4 text-gray-600">Le message a été copié dans le presse-papiers avec succès.</p>
+                <button onclick="closeModal()" class="mt-6 w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales pour l'état (non utilisées ici, mais bonne pratique)
+        let formData = {};
+
+        // ----------------------------------------------------------------------
+        // FONCTIONS UTILITAIRES
+        // ----------------------------------------------------------------------
+
+        /**
+         * Obtient la date du jour au format YYYY-MM-DD
+         * @returns {string} Date formatée
+         */
+        function getTodayDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Initialise la date de remise au champ de date du jour
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('deliveryDate').value = getTodayDate();
+        });
+
+        /**
+         * Affiche la modale de notification
+         * @param {string} message Le message à afficher
+         */
+        function showModal(message) {
+            const modal = document.getElementById('notification-modal');
+            document.getElementById('notification-text').textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(closeModal, 3000); // Fermeture automatique après 3 secondes
+        }
+
+        /**
+         * Ferme la modale de notification
+         */
+        function closeModal() {
+            const modal = document.getElementById('notification-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        /**
+         * Copie le contenu d'un textarea dans le presse-papiers
+         * @param {string} elementId L'ID du textarea à copier
+         */
+        function copyMessage(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // Pour les mobiles
+
+            try {
+                // Utilisation de document.execCommand('copy') pour assurer la compatibilité dans l'iframe
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showModal(`Message ${elementId} copié !`);
+                } else {
+                    console.error('La copie a échoué');
+                }
+            } catch (err) {
+                console.error('Erreur lors de la copie: ', err);
+                showModal("Erreur lors de la tentative de copie.");
+            }
+        }
+        
+        /**
+         * Copie tous les messages dans le presse-papiers avec des séparateurs
+         */
+        function copyAllMessages() {
+            const techMsg = document.getElementById('techMessage').value;
+            const userMsg = document.getElementById('userMessage').value;
+            const assetMsg = document.getElementById('assetMessage').value;
+            const excelMsg = document.getElementById('excelMessage').value;
+
+            const separator = "\n\n--- NOUVEAU MESSAGE ---\n\n";
+
+            const combinedText = 
+                `1. Clôture Ticket TECH:\n${techMsg}` +
+                separator +
+                `2. Message Utilisateur:\n${userMsg}` +
+                separator +
+                `3. Mise à Jour Asset:\n${assetMsg}` +
+                separator +
+                `4. Fichier Excel Suivi:\n${excelMsg}`;
+
+            // Créer un élément temporaire pour copier
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = combinedText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                const statusElement = document.getElementById('copyAllStatus');
+                if (successful) {
+                    statusElement.textContent = "Tous les messages ont été copiés !";
+                    statusElement.classList.remove('text-red-500');
+                    statusElement.classList.add('text-green-600');
+                } else {
+                    statusElement.textContent = "Échec de la copie de tous les messages.";
+                    statusElement.classList.remove('text-green-600');
+                    statusElement.classList.add('text-red-500');
+                }
+            } catch (err) {
+                console.error('Erreur lors de la copie de tout: ', err);
+                document.getElementById('copyAllStatus').textContent = "Erreur lors de la tentative de copie de tout.";
+            } finally {
+                document.body.removeChild(tempTextarea);
+                setTimeout(() => document.getElementById('copyAllStatus').textContent = '', 4000);
+            }
+        }
+
+
+        // ----------------------------------------------------------------------
+        // FONCTION DE GÉNÉRATION PRINCIPALE
+        // ----------------------------------------------------------------------
+
+        /**
+         * Valide le formulaire, récupère les données et génère les messages.
+         */
+        function generateMessages() {
+            const form = document.getElementById('messageForm');
+            const errorElement = document.getElementById('error-message');
+            const outputSection = document.getElementById('output-messages');
+
+            // 1. Validation des champs obligatoires
+            if (!form.checkValidity()) {
+                errorElement.classList.remove('hidden');
+                outputSection.classList.add('hidden');
+                // Simuler la soumission pour que le navigateur affiche les messages d'erreur natifs
+                const tempButton = document.createElement('button');
+                form.appendChild(tempButton);
+                tempButton.click();
+                form.removeChild(tempButton);
+                return;
+            }
+
+            // Cacher le message d'erreur
+            errorElement.classList.add('hidden');
+            
+            // 2. Récupération des données
+            const data = {
+                userName: document.getElementById('userName').value.trim(),
+                oldSerial: document.getElementById('oldSerial').value.trim(),
+                newSerial: document.getElementById('newSerial').value.trim(),
+                sctask: document.getElementById('sctask').value.trim(),
+                deliveryDate: document.getElementById('deliveryDate').value,
+                ritm: document.getElementById('ritm').value.trim() || 'N/A', // Facultatif
+                todayDate: getTodayDate()
+            };
+            
+            // Stocker les données si nécessaire
+            formData = data;
+
+            // 3. Génération du contenu des messages
+            
+            // Message 1: Clôture Ticket (Tech) — contient le résumé technique
+            const techMsgContent = 
+                `- ${data.userName}
+- Matériel remplacé suite au passage de l'utilisateur au kiosque IT :
+- Ancien matériel : ${data.oldSerial} - APPLE INC. iPhone SE
+- Nouveau matériel : ${data.newSerial} - APPLE INC. iPhone 16e
+- Asset à jour
+- Transfert de SIM OK`;
+            document.getElementById('techMessage').value = techMsgContent;
+
+            // Message 2: Destiné à l'Utilisateur — email de clôture
+            const userMsgContent = 
+                `Bonjour,
+
+Comme vu ensemble ce jour ${data.deliveryDate} nous avons procédé au remplacement de votre mobile.
+Nous clôturons donc votre demande.
+
+En vous remerciant.
+Cordialement,
+OSS Laennec`;
+            document.getElementById('userMessage').value = userMsgContent;
+
+            // Message 3: Mise à Jour Asset
+            const assetMsgContent = 
+                `État : In Stock
+Substat : Pending disposal
+Stockroom : Laennec Office
+Commentaire : Date d'entrée : ${data.todayDate} – Localisation : Bureau Othman
+Asset Tech activities (jaune) :
+Campagne de renouvellement : ${data.ritm}
+Numéro de ticket TECH : ${data.sctask}`;
+            document.getElementById('assetMessage').value = assetMsgContent;
+
+            // Message 4: Fichier Excel Othman
+            const excelMsgContent = 
+                `${data.todayDate}
+SCTASK : ${data.sctask}
+RITM : ${data.ritm}
+Nouveau numéro de série : ${data.newSerial}
+Ancien numéro de série : ${data.oldSerial}`;
+            document.getElementById('excelMessage').value = excelMsgContent;
+
+            // 4. Affichage des messages générés
+            outputSection.classList.remove('hidden');
+            
+            // Optionnel: Faire défiler vers les messages
+            outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
